@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Gestion Financière Hebdomadaire</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #001f54;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            max-width: 120px;
+        }
+        
+        .logo-container img {
+            width: 100%;
+            height: auto;
+        }
+        
+        h1 {
+            color: #b42150;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f0f1f1;
+            border-radius: 10px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-nav {
+            background: #001f54;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .btn-nav:hover {
+            background: #003380;
+        }
+        
+        .semaine-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .budget-section {
+            background: #001f54;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .budget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .budget-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .budget-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .budget-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .budget-input-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .budget-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+        }
+        
+        .budget-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .budget-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .comparison-bar {
+            background: rgba(255,255,255,0.3);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 15px;
+        }
+        
+        .comparison-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #001f54;
+        }
+        
+        .comparison-fill.over {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #b42150;
+            border-bottom-color: #b42150;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .planning-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .jour-card {
+            background: #f0f1f1;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid #001f54;
+        }
+        
+        .jour-card.weekend {
+            border-left-color: #c7a0cb;
+            background: #f8f4fa;
+        }
+        
+        .jour-card.today {
+            border-left-color: #b42150;
+            background: #fef0f4;
+        }
+        
+        .jour-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .jour-info {
+            flex: 1;
+        }
+        
+        .jour-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+        
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .progress-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 4px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: #666;
+            position: relative;
+        }
+        
+        .progress-circle.complete {
+            border-color: #c7a0cb;
+            color: #c7a0cb;
+            background: #f8f4fa;
+        }
+        
+        .progress-circle.partial {
+            border-color: #b42150;
+            color: #b42150;
+        }
+        
+        .jour-nom {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .jour-date {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .taches-liste {
+            margin-bottom: 10px;
+        }
+        
+        .tache-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .tache-item.done {
+            opacity: 0.5;
+        }
+        
+        .tache-item.done .tache-text {
+            text-decoration: line-through;
+        }
+        
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .tache-text {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 14px;
+            color: #333;
+            width: 100%;
+            padding: 2px;
+        }
+        
+        .tache-text:focus {
+            outline: 2px solid #b42150;
+            border-radius: 4px;
+            padding: 4px;
+        }
+        
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tache-item:hover .btn-delete {
+            opacity: 1;
+        }
+        
+        .add-tache {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-tache {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .input-tache:focus {
+            outline: none;
+            border-color: #b42150;
+        }
+        
+        .btn-add {
+            background: #001f54;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .tracker-section {
+            background: #f0f1f1;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .depense-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .depense-input {
+            flex: 2;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        
+        .depense-montant {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .depense-input:focus {
+            outline: none;
+            border-color: #b42150;
+        }
+        
+        .btn-add-depense {
+            background: #001f54;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .btn-add-depense:hover {
+            background: #003380;
+        }
+        
+        .depenses-liste {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .depense-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #b42150;
+        }
+        
+        .depense-info {
+            flex: 1;
+        }
+        
+        .depense-nom {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .depense-date {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .depense-montant {
+            font-size: 20px;
+            font-weight: bold;
+            color: #b42150;
+            margin-right: 15px;
+        }
+        
+        .btn-suppr-depense {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .alert.warning {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            color: #92400e;
+        }
+        
+        .alert.danger {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .alert.success {
+            background: #e8f5e9;
+            border: 2px solid #c7a0cb;
+            color: #1b5e20;
+        }
+        
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .btn-nouvelle {
+            background: #c7a0cb;
+            color: white;
+        }
+        
+        .btn-nouvelle:hover {
+            background: #b389b8;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding: 30px 20px;
+            background: #f0f1f1;
+            border-radius: 12px;
+        }
+        
+        .logo-footer {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .logo-footer-placeholder {
+            width: 150px;
+            height: 60px;
+            margin: 0 auto;
+            background: #e0e0e0;
+            border: 2px dashed #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+        
+        .mentions-legales {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .mentions-legales h3 {
+            color: #b42150;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .mentions-legales p {
+            color: #666;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding: 15px;
+            background: #001f54;
+            color: white;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        .copyright p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .logo-container {
+                position: static;
+                max-width: 80px;
+                margin: 0 auto 20px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .budget-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .depense-form {
+                flex-direction: column;
+            }
+            
+            .actions-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LOGO - Remplacez le lien par votre logo -->
+        <div class="logo-container">
+            <!-- Décommentez et ajoutez votre logo ici -->
+            <!-- <img src="votre-logo.png" alt="Logo"> -->
+        </div>
+        
+        <h1> Ma Gestion Financière Hebdomadaire</h1>
+        <p class="subtitle">Planning + Budget : Tout au même endroit</p>
+        
+        <div class="navigation">
+            <h2 class="semaine-title" id="semaineTitle">Semaine du ...</h2>
+            <div class="nav-buttons">
+                <button class="btn-nav" onclick="semainePrecedente()">◀ Précédent</button>
+                <button class="btn-nav" onclick="aujourdhui()">Aujourd'hui</button>
+                <button class="btn-nav" onclick="semaineSuivante()">Suivant ▶</button>
+            </div>
+        </div>
+        
+        <div class="budget-section">
+            <div class="budget-grid">
+                <div class="budget-item">
+                    <div class="budget-label">Budget Prévu</div>
+                    <div class="budget-value" id="budgetPrevu">0,00 €</div>
+                </div>
+                <div class="budget-item">
+                    <div class="budget-label">Dépensé Réel</div>
+                    <div class="budget-value" id="budgetReel">0,00 €</div>
+                </div>
+                <div class="budget-item">
+                    <div class="budget-label">Reste Disponible</div>
+                    <div class="budget-value" id="budgetReste">0,00 €</div>
+                </div>
+            </div>
+            
+            <div class="budget-input-section">
+                <input type="number" class="budget-input" id="inputBudget" 
+                       placeholder="Définir le budget de la semaine (€)" step="0.01" min="0">
+                <button class="btn-nav" onclick="definirBudget()">Valider</button>
+            </div>
+            
+            <div class="comparison-bar">
+                <div class="comparison-fill" id="comparisonFill">0%</div>
+            </div>
+        </div>
+        
+        <div id="alertZone"></div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('planning', event)">📅 Planning de la semaine</button>
+            <button class="tab" onclick="switchTab('tracker', event)">💳 Tracker de dépenses</button>
+        </div>
+        
+        <div id="tab-planning" class="tab-content active">
+            <div class="planning-grid" id="planningGrid"></div>
+        </div>
+        
+        <div id="tab-tracker" class="tab-content">
+            <div class="tracker-section">
+                <h3 style="margin-bottom: 15px; color: #333;">Ajouter une dépense</h3>
+                <div class="depense-form">
+                    <input type="text" class="depense-input" id="nomDepense" placeholder="Description (ex: courses)">
+                    <input type="number" class="depense-input depense-montant" id="montantDepense" 
+                           placeholder="Montant (€)" step="0.01" min="0">
+                    <button class="btn-add-depense" onclick="ajouterDepense()">➕ Ajouter</button>
+                </div>
+                
+                <h3 style="margin-bottom: 15px; color: #333;">Mes dépenses cette semaine</h3>
+                <div class="depenses-liste" id="depensesList"></div>
+            </div>
+        </div>
+        
+        <!-- FOOTER AVEC MENTIONS LÉGALES -->
+        <div class="footer">
+            <!-- Espace pour le logo -->
+            <div class="logo-footer"> 
+              <!--  <div class="logo-footer-placeholder"> -->
+                    <img src="https://d1yei2z3i6k35z.cloudfront.net/13882048/68b9ba238c879_Logo.png" alt="Mon Logo" style="max-width: 100px; height: auto;">
+                </div>
+                <!-- Pour ajouter votre logo, remplacez la div ci-dessus par : -->
+                <!-- <img src="votre-logo.png" alt="Logo Cerise Up" style="max-width: 100px; height: auto;"> -->
+            </div>
+            
+            <!-- Mentions légales -->
+            <div class="mentions-legales">
+                <h3>Mentions légales</h3>
+                <p>
+                    Cet outil de calcul est fourni à titre indicatif uniquement. Les résultats générés ne constituent pas un conseil professionnel, juridique, comptable ou fiscal. Les prix calculés sont des estimations et ne tiennent pas compte de la TVA. L'utilisateur reste seul responsable de la vérification des calculs et de la fixation de ses prix de vente. Nous déclinons toute responsabilité quant aux décisions prises sur la base des résultats fournis par cet outil.
+                </p>
+            </div>
+            
+            <div class="copyright">
+                <p><strong>© 2025 Cerise Up - Tous droits réservés</strong></p>
+                <p>
+                    Cet outil est la propriété exclusive de Cerise Up. Toute reproduction, distribution, modification, adaptation, retransmission ou publication, même partielle, de cet outil est strictement interdite sans autorisation écrite préalable. La revente, la commercialisation ou l'utilisation à des fins commerciales par des tiers est formellement interdite. Toute violation de ces droits peut donner lieu à des poursuites judiciaires.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentWeekStart = null;
+        let data = {};
+        
+        const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+        
+        const TACHES_PAR_DEFAUT = {
+            'Lundi': [
+                'Checker le compte en banque',
+                'Planifier les dépenses de la semaine',
+                'Faire la liste de courses'
+            ],
+            'Mardi': [
+                'Mettre à jour le tracker budget',
+                'Vérifier les factures en attente'
+            ],
+            'Mercredi': [
+                'Point milieu de semaine sur le budget',
+                'Ajuster les dépenses si nécessaire'
+            ],
+            'Jeudi': [
+                'Préparer les courses du weekend',
+                'Vérifier les prélèvements à venir'
+            ],
+            'Vendredi': [
+                'Mettre à jour le tracker budget',
+                'Classer les documents de la semaine'
+            ],
+            'Samedi': [
+                'Faire les courses de la semaine',
+                'Préparer les repas'
+            ],
+            'Dimanche': [
+                'Bilan de la semaine écoulée',
+                'Définir le budget pour la semaine suivante',
+                'Planifier les dépenses importantes'
+            ]
+        };
+        
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+        
+        function getWeekKey(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        function formatDate(date) {
+            return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        
+        function chargerDonnees() {
+            try {
+                const saved = localStorage.getItem('gestionFinanciere');
+                if (saved) {
+                    data = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Erreur chargement:', e);
+                data = {};
+            }
+        }
+        
+        function sauvegarder() {
+            try {
+                localStorage.setItem('gestionFinanciere', JSON.stringify(data));
+            } catch (e) {
+                console.error('Erreur sauvegarde:', e);
+            }
+        }
+        
+        function getWeekData(weekKey) {
+            if (!data[weekKey]) {
+                data[weekKey] = {
+                    budget: 0,
+                    taches: {},
+                    depenses: []
+                };
+                
+                JOURS.forEach(function(jour, index) {
+                    const jourKey = 'jour_' + index;
+                    data[weekKey].taches[jourKey] = (TACHES_PAR_DEFAUT[jour] || []).map(function(text) {
+                        return {
+                            id: Date.now() + Math.random(),
+                            text: text,
+                            done: false
+                        };
+                    });
+                });
+            }
+            return data[weekKey];
+        }
+        
+        function afficherSemaine() {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            
+            document.getElementById('semaineTitle').textContent = 
+                'Semaine du ' + formatDate(currentWeekStart) + ' au ' + formatDate(weekEnd);
+            
+            const weekData = getWeekData(weekKey);
+            
+            document.getElementById('inputBudget').value = weekData.budget || '';
+            afficherBudget();
+            afficherPlanning();
+            afficherDepenses();
+        }
+        
+        function afficherBudget() {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            
+            const budgetPrevu = weekData.budget || 0;
+            const totalDepenses = weekData.depenses.reduce((sum, d) => sum + d.montant, 0);
+            const reste = budgetPrevu - totalDepenses;
+            const pourcentage = budgetPrevu > 0 ? (totalDepenses / budgetPrevu) * 100 : 0;
+            
+            document.getElementById('budgetPrevu').textContent = budgetPrevu.toFixed(2) + ' €';
+            document.getElementById('budgetReel').textContent = totalDepenses.toFixed(2) + ' €';
+            document.getElementById('budgetReste').textContent = reste.toFixed(2) + ' €';
+            
+            const compFill = document.getElementById('comparisonFill');
+            compFill.style.width = Math.min(100, pourcentage) + '%';
+            compFill.textContent = pourcentage.toFixed(0) + '%';
+            
+            if (pourcentage > 100) {
+                compFill.classList.add('over');
+            } else {
+                compFill.classList.remove('over');
+            }
+            
+            const alertZone = document.getElementById('alertZone');
+            alertZone.innerHTML = '';
+            
+            if (budgetPrevu === 0) {
+                alertZone.innerHTML = '<div class="alert warning"> Définissez votre budget pour la semaine</div>';
+            } else if (reste < 0) {
+                alertZone.innerHTML = '<div class="alert danger">🚨 Vous avez dépassé votre budget de ' + Math.abs(reste).toFixed(2) + ' € !</div>';
+            } else if (reste < budgetPrevu * 0.2) {
+                alertZone.innerHTML = '<div class="alert warning">⚡ Attention ! Il ne reste que ' + reste.toFixed(2) + ' € (20% du budget)</div>';
+            } else if (reste === budgetPrevu && weekData.depenses.length === 0) {
+                // Rien
+            } else {
+                alertZone.innerHTML = '<div class="alert success">✅ Vous êtes dans les clous ! Continuez comme ça</div>';
+            }
+        }
+        
+        function definirBudget() {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            const budget = parseFloat(document.getElementById('inputBudget').value) || 0;
+            
+            if (budget > 0) {
+                weekData.budget = budget;
+                sauvegarder();
+                afficherBudget();
+            }
+        }
+        
+        function afficherPlanning() {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            const container = document.getElementById('planningGrid');
+            container.innerHTML = '';
+            
+            const today = new Date().toDateString();
+            
+            JOURS.forEach(function(jour, index) {
+                const jourDate = new Date(currentWeekStart);
+                jourDate.setDate(jourDate.getDate() + index);
+                const jourKey = 'jour_' + index;
+                
+                const isWeekend = index >= 5;
+                const isToday = jourDate.toDateString() === today;
+                
+                const lesTaches = weekData.taches[jourKey] || [];
+                
+                const card = document.createElement('div');
+                card.className = 'jour-card' + (isWeekend ? ' weekend' : '') + (isToday ? ' today' : '');
+                
+                // Calculer la progression
+                const totalTaches = lesTaches.length;
+                const tachesDone = lesTaches.filter(function(t) { return t.done; }).length;
+                const pourcentage = totalTaches > 0 ? Math.round((tachesDone / totalTaches) * 100) : 0;
+                const progressClass = pourcentage === 100 ? 'complete' : (pourcentage > 0 ? 'partial' : '');
+                
+                card.innerHTML = '<div class="jour-header"><div class="jour-info"><div class="jour-nom">' + jour + (isToday ? ' (Aujourd\'hui)' : '') + '</div><div class="jour-date">' + formatDate(jourDate) + '</div></div><div class="jour-progress"><div class="progress-text">' + tachesDone + '/' + totalTaches + ' tâches</div><div class="progress-circle ' + progressClass + '">' + pourcentage + '%</div></div></div><div class="taches-liste" id="taches_' + jourKey + '"></div><div class="add-tache"><input type="text" class="input-tache" id="input_' + jourKey + '" placeholder="Nouvelle tâche..."><button class="btn-add" onclick="ajouterTache(\'' + jourKey + '\')">+</button></div>';
+                
+                container.appendChild(card);
+                
+                afficherTaches(jourKey);
+                
+                document.getElementById('input_' + jourKey).addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        ajouterTache(jourKey);
+                    }
+                });
+            });
+        }
+        
+        function afficherTaches(jourKey) {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            const lesTaches = weekData.taches[jourKey] || [];
+            const container = document.getElementById('taches_' + jourKey);
+            
+            if (lesTaches.length === 0) {
+                container.innerHTML = '<div style="color: #999; text-align: center; padding: 15px; font-size: 13px;">Aucune tâche</div>';
+                return;
+            }
+            
+            container.innerHTML = lesTaches.map(function(tache) {
+                return '<div class="tache-item' + (tache.done ? ' done' : '') + '"><input type="checkbox" class="checkbox"' + (tache.done ? ' checked' : '') + ' onchange="toggleTache(\'' + jourKey + '\', ' + tache.id + ')"><input type="text" class="tache-text" value="' + tache.text + '" onchange="modifierTache(\'' + jourKey + '\', ' + tache.id + ', this.value)"><button class="btn-delete" onclick="supprimerTache(\'' + jourKey + '\', ' + tache.id + ')">✕</button></div>';
+            }).join('');
+        }
+        
+        function ajouterTache(jourKey) {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            const input = document.getElementById('input_' + jourKey);
+            const text = input.value.trim();
+            
+            if (text) {
+                if (!weekData.taches[jourKey]) {
+                    weekData.taches[jourKey] = [];
+                }
+                
+                weekData.taches[jourKey].push({
+                    id: Date.now(),
+                    text: text,
+                    done: false
+                });
+                
+                input.value = '';
+                sauvegarder();
+                afficherTaches(jourKey);
+            }
+        }
+        
+        function toggleTache(jourKey, id) {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            const tache = weekData.taches[jourKey].find(t => t.id === id);
+            
+            if (tache) {
+                tache.done = !tache.done;
+                sauvegarder();
+                afficherTaches(jourKey);
+            }
+        }
+        
+        function modifierTache(jourKey, id, newText) {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            const tache = weekData.taches[jourKey].find(t => t.id === id);
+            
+            if (tache) {
+                tache.text = newText;
+                sauvegarder();
+            }
+        }
+        
+        function supprimerTache(jourKey, id) {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            weekData.taches[jourKey] = weekData.taches[jourKey].filter(t => t.id !== id);
+            sauvegarder();
+            afficherTaches(jourKey);
+        }
+        
+        function afficherDepenses() {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            const container = document.getElementById('depensesList');
+            
+            if (weekData.depenses.length === 0) {
+                container.innerHTML = '<div class="empty-state">Aucune dépense enregistrée cette semaine</div>';
+                return;
+            }
+            
+            container.innerHTML = weekData.depenses.map(function(d) {
+                return '<div class="depense-item"><div class="depense-info"><div class="depense-nom">' + d.nom + '</div><div class="depense-date">' + d.date + '</div></div><div class="depense-montant">' + d.montant.toFixed(2) + ' €</div><button class="btn-suppr-depense" onclick="supprimerDepense(' + d.id + ')">✕</button></div>';
+            }).join('');
+        }
+        
+        function ajouterDepense() {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            
+            const nom = document.getElementById('nomDepense').value.trim();
+            const montant = parseFloat(document.getElementById('montantDepense').value);
+            
+            if (nom && montant > 0) {
+                weekData.depenses.push({
+                    id: Date.now(),
+                    nom: nom,
+                    montant: montant,
+                    date: new Date().toLocaleString('fr-FR', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    })
+                });
+                
+                document.getElementById('nomDepense').value = '';
+                document.getElementById('montantDepense').value = '';
+                
+                sauvegarder();
+                afficherDepenses();
+                afficherBudget();
+            }
+        }
+        
+        function supprimerDepense(id) {
+            const weekKey = getWeekKey(currentWeekStart);
+            const weekData = getWeekData(weekKey);
+            
+            weekData.depenses = weekData.depenses.filter(d => d.id !== id);
+            sauvegarder();
+            afficherDepenses();
+            afficherBudget();
+        }
+        
+        function switchTab(tabName, event) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+        
+        function semainePrecedente() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            afficherSemaine();
+        }
+        
+        function semaineSuivante() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            afficherSemaine();
+        }
+        
+        function aujourdhui() {
+            currentWeekStart = getWeekStart(new Date());
+            afficherSemaine();
+        }
+        
+        function nouvelleSemaine() {
+            if (confirm('Commencer une nouvelle semaine ?\n\nCela va :\n✅ Conserver le planning (tâches déjà créées)\n✅ Décocher toutes les tâches\n❌ Effacer toutes les dépenses\n❌ Réinitialiser le budget à 0\n\nConfirmer ?')) {
+                const weekKey = getWeekKey(currentWeekStart);
+                const weekData = getWeekData(weekKey);
+                
+                Object.keys(weekData.taches).forEach(jourKey => {
+                    weekData.taches[jourKey].forEach(tache => {
+                        tache.done = false;
+                    });
+                });
+                
+                weekData.budget = 0;
+                weekData.depenses = [];
+                
+                sauvegarder();
+                afficherSemaine();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('montantDepense').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    ajouterDepense();
+                }
+            });
+            
+            document.getElementById('inputBudget').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    definirBudget();
+                }
+            });
+        });
+        
+        chargerDonnees();
+        currentWeekStart = getWeekStart(new Date());
+        afficherSemaine();
+    </script>
+</body>
+</html>
